@@ -1,0 +1,303 @@
+/* Status Toggle */
+/* .status-toggle {
+    width: 100px;
+    height: 80px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+} */
+
+.status-toggle:checked {
+    background-color: #4e7661 !important;
+    border-color: #4e7661 !important;
+}
+
+.status-toggle:not(:checked) {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.modal-header.bg-gradient-dark {
+    background: #4e7661;
+}
+
+.avatar-lg {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.icon-badge {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+}
+
+.bg-light-subtle {
+    background-color: #f8f9fa !important;
+}
+
+.bg-primary-subtle {
+    background-color: #e0f2f7 !important;
+}
+
+.bg-success-subtle {
+    background-color: #e6faed !important;
+}
+
+.bg-info-subtle {
+    background-color: #e0f7fa !important;
+}
+
+.bg-warning-subtle {
+    background-color: #fff3cd !important;
+}
+
+.bg-danger-subtle {
+    background-color: #fce8e6 !important;
+}
+
+.text-dark-emphasis {
+    color: #343a40 !important;
+}
+
+.fw-medium {
+    font-weight: 500 !important;
+}
+
+.bg-warning-dark {
+    /* Your chosen brown/gold color for the banner */
+    background-color: #A9874D !important;
+}
+
+.profile-image-container {
+    /* To make the image overlap the banner and the white area */
+    position: relative;
+    z-index: 10;
+}
+
+.fs-7 {
+    font-size: 0.9rem !important;
+}
+
+.text-success {
+    color: #4e7661 !important;
+}
+
+.bg-success-subtle {
+    background-color: #e6faed !important;
+}
+
+.letter-spacing-1 {
+    letter-spacing: 0.5px;
+}
+
+.fs-12px {
+    font-size: 12px;
+}
+
+.modal-dialog-scrollable .modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.banner-video {
+    width: 100%;
+    /* card ke andar full width */
+    max-height: 400px;
+    /* maximum height, card design ke hisaab se */
+    object-fit: cover;
+    /* video ka aspect ratio maintain ho aur card fill ho jaye */
+    border-radius: 0.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: none;
+}
+
+.btn-register {
+    background: #2d6a4f;
+    border: none;
+}
+
+.btn-register:hover {
+    background: #245943;
+}
+
+
+.right-branding {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.brand-icon {
+    width: 120px;
+    height: 120px;
+    transform: rotate(45deg);
+}
+
+.brand-icon i {
+    transform: rotate(-45deg);
+}
+
+/* Progress Indicator Styles */
+.progress-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 0 20px;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    z-index: 1;
+}
+
+.progress-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: #e9ecef;
+    z-index: -1;
+}
+
+.progress-step.completed:not(:last-child)::after {
+    background: #28a745;
+}
+
+.progress-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active .progress-circle {
+    background: #0d6efd;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+
+.progress-step.completed .progress-circle {
+    background: #28a745;
+    color: white;
+}
+
+.progress-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6c757d;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+.progress-step.active .progress-label {
+    color: #0d6efd;
+}
+
+.progress-step.completed .progress-label {
+    color: #28a745;
+}
+
+/* Section Title Styles */
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+}
+
+/* Document Card Styles */
+.document-card {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.document-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #0d6efd;
+}
+
+.document-card .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Form Enhancements */
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.input-group-text {
+    border-right: none;
+    background-color: #f8f9fa;
+}
+
+.form-control.border-start-0 {
+    border-left: none;
+}
+
+.form-control.border-start-0:focus {
+    border-left: none;
+}
+
+/* Full height login page */
+/* html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+
+.registration-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -1,0 +1,13 @@
+@import "../frontend/css/bootstrap.min.css";
+@import "../frontend/css/animate.css";
+@import "../frontend/css/aos.css";
+@import "../frontend/css/jquery-ui.css";
+@import "../frontend/css/main.css";
+@import "../frontend/css/select2.min.css";
+@import "../frontend/css/slick.css";
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
