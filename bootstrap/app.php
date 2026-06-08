@@ -15,14 +15,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/nowpayments',
+        ]);
+
         $middleware->alias([
             'check.permission' => CheckPermission::class,
             'vendor.blocked' => CheckVendorBlocked::class,
             'disable.back.button' => DisableBackButton::class,
             'webuser' => WebUserMiddleware::class, // Added webuser middleware here
         ]);
-        
-        
+
         $middleware->web(append: [
             DisableBackButton::class,
         ]);

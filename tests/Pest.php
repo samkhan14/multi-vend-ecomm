@@ -41,7 +41,12 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function signNowPaymentsPayload(array $payload, string $secret = 'test-ipn-secret'): string
 {
-    // ..
+    ksort($payload);
+
+    return hash_hmac('sha512', json_encode($payload, JSON_UNESCAPED_SLASHES), $secret);
 }
+
+pest()->extend(Tests\TestCase::class)
+    ->in('Unit');

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\AnnoucementController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BannerController;
@@ -9,50 +10,43 @@ use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EwalletController;
 use App\Http\Controllers\Admin\GeneralSettingController;
-use App\Http\Controllers\Admin\InquireController;
+use App\Http\Controllers\Admin\IntegrationController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageContentController;
+use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\PayoutController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\SocialLinksController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VariantController;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Vendor\VendorController;
-use Spatie\Permission\Middleware\PermissionMiddleware;
-use App\Models\Category;
-use App\Models\User;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\ShopController;
-use App\Http\Controllers\Frontend\CartController;
-use App\Http\Controllers\Frontend\WishlistController;
 use App\Http\Controllers\Frontend\AuthController;
-use App\Http\Controllers\Frontend\PasswordResetController;
+use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\CompareController;
+use App\Http\Controllers\Frontend\PasswordResetController;
 use App\Http\Controllers\Frontend\VendorsController;
-use App\Models\PageContent;
-use App\Http\Controllers\Admin\SocialLinksController;
+use App\Http\Controllers\Frontend\WishlistController;
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\Vendor\VendorController;
+use App\Http\Controllers\Webhooks\NowPaymentsWebhookController;
 use App\Models\AboutContent;
-use App\Http\Controllers\Admin\AboutController;
-use App\Http\Controllers\Admin\IntegrationController;
 use App\Models\frontend\Cart;
+use App\Models\PageContent;
 use App\Models\Product;
-
-
-
-
-
+use App\Models\User;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/lw-test', function () {
     $path = storage_path('app/public/livewire-tmp');
+
     return [
         'readable' => is_readable($path),
         'writable' => is_writable($path),
@@ -157,7 +151,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.permission'])
         Route::get('/payouts', 'index')->name('payouts');
     });
 
-       Route::controller(SocialLinksController::class)->name('social-links.')->group(function () {
+    Route::controller(SocialLinksController::class)->name('social-links.')->group(function () {
         Route::get('/social-links', 'index')->name('index');
         Route::get('/social-links/create', 'create')->name('create');
         Route::get('/social-links/edit/{id}', 'edit')->name('edit');
@@ -166,8 +160,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.permission'])
         Route::get('/about', 'index')->name('about');
     });
 
-
-      Route::get('/integrations', [IntegrationController::class, 'index'])->name('integrations');
+    Route::get('/integrations', [IntegrationController::class, 'index'])->name('integrations');
+    Route::controller(PaymentGatewayController::class)->group(function () {
+        Route::get('/payment-gateways', 'index')->name('payment-gateways');
+    });
 });
 
 // ========== VENDOR ROUTES ==========
@@ -202,7 +198,7 @@ Route::get('/email/verify/{id}/{hash}', function (Illuminate\Http\Request $reque
 
 Route::get('/quick-view/{id}', [FrontendController::class, 'quickView'])->name('quick.view');
 Route::get('/', [FrontendController::class, 'index'])->name('home');
-Route::get('contact', function(){
+Route::get('contact', function () {
     return view('frontend.contact');
 })->name('contact');
 
@@ -231,9 +227,14 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('place.order');
     Route::get('/thank-you/{order_number}', [CheckoutController::class, 'thankyou'])->name('thankyou');
+    Route::get('/payment/cancel/{order_number}', [CheckoutController::class, 'paymentCancel'])->name('payment.cancel');
     Route::get('/invoice/{order_number}', [CheckoutController::class, 'downloadInvoice'])->name('invoice');
     Route::get('/cart-data', [CheckoutController::class, 'getCheckoutCart'])->name('cart.data');
 });
+
+Route::post('/webhooks/nowpayments', NowPaymentsWebhookController::class)
+    ->middleware('throttle:60,1')
+    ->name('webhooks.nowpayments');
 // Wishlist Routes
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
 Route::post('/wishlist/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
@@ -255,7 +256,6 @@ Route::post('/compare/check', [CompareController::class, 'checkCompare'])->name(
 Route::get('/compare/count', [CompareController::class, 'getCompareCount'])->name('compare.count');
 Route::get('/compare/items', [CompareController::class, 'getCompareItems'])->name('compare.items');
 
-
 Route::get('/cart', [CartController::class, 'cartPage'])->name('cart.page');
 
 // ========== SHOP ROUTE ==========
@@ -267,27 +267,27 @@ Route::prefix('products')->name('category.')->group(function () {
     Route::get('/{slug}', [ShopController::class, 'categoryHierarchy'])->name('level1');
 });
 // User Auth Routes
-Route::prefix('user')->name('user.')->group(function() {
-    Route::get('/login', function() {
+Route::prefix('user')->name('user.')->group(function () {
+    Route::get('/login', function () {
         return view('frontend.auth.login');
     })->name('login');
-    
-    Route::get('/register', function() {
+
+    Route::get('/register', function () {
         return view('frontend.auth.register');
     })->name('register');
-    
+
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
-    
-Route::middleware(['webuser'])->group(function() { 
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
-    Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
-    Route::post('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
-    Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.change'); 
-Route::get('/orders', [AuthController::class, 'orders'])->name('orders');
-;
-});
+
+    Route::middleware(['webuser'])->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+        Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+        Route::post('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.change');
+        Route::get('/orders', [AuthController::class, 'orders'])->name('orders');
+
+    });
 });
 
 // Password Reset Routes
@@ -316,24 +316,24 @@ Route::get('policy/{slug}', function ($slug) {
 
 Route::get('about', function () {
     $about = AboutContent::first();
+
     return view('frontend.about', compact('about'));
 })->name('about');
 
 // CSRF Token refresh endpoint (for auto-refresh)
-Route::get('/refresh-csrf', function() {
+Route::get('/refresh-csrf', function () {
     return response()->json([
-        'token' => csrf_token()
+        'token' => csrf_token(),
     ]);
 })->name('csrf.refresh');
-
 
 Route::post('/switch-currency', function () {
     $newCurrency = request('currency');
     $oldCurrency = session('user_currency', getGeneralSetting()->currency ?? 'PKR');
-    
+
     // Save new currency in session
     session(['user_currency' => $newCurrency]);
-    
+
     // Agar currency change hui hai
     if ($oldCurrency !== $newCurrency) {
         // Get all cart items
@@ -342,7 +342,7 @@ Route::post('/switch-currency', function () {
         } else {
             $cartItems = Cart::where('session_id', session()->getId())->get();
         }
-        
+
         foreach ($cartItems as $cartItem) {
             $product = Product::find($cartItem->product_id);
             if ($product) {
@@ -352,10 +352,8 @@ Route::post('/switch-currency', function () {
             }
         }
     }
-    
+
     return back();
 })->name('switch.currency');
 
-
-
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

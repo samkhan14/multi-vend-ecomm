@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'nowpayments' => [
+        'api_key' => env('NOWPAYMENTS_API_KEY'),
+        'ipn_secret' => env('NOWPAYMENTS_IPN_SECRET'),
+        'sandbox' => (bool) env('NOWPAYMENTS_SANDBOX', false),
+        'base_url' => env('NOWPAYMENTS_SANDBOX', false)
+            ? 'https://api-sandbox.nowpayments.io/v1/'
+            : 'https://api.nowpayments.io/v1/',
+    ],
+
 ];

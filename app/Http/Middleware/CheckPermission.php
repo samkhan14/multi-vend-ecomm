@@ -4,10 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
+use Symfony\Component\HttpFoundation\Response;
 
 class CheckPermission
 {
@@ -20,7 +19,7 @@ class CheckPermission
     {
         $user = Auth::user();
         $routeName = $request->route()->getName();
-        
+
         if ($user) {
             // Check if user has Super Admin role
             if ($user->hasRole('Super Admin')) {
@@ -30,12 +29,12 @@ class CheckPermission
 
         // Get all permissions from database
         $allPermissions = Permission::pluck('name')->toArray();
-        
+
         // Check if route name needs permission (only if permission exists in database)
         $requiredPermission = $this->getRequiredPermission($routeName);
-        
-        if (!empty($requiredPermission) && in_array($requiredPermission, $allPermissions)) {
-            if (!$user || !$user->hasPermissionTo($requiredPermission)) {
+
+        if (! empty($requiredPermission) && in_array($requiredPermission, $allPermissions)) {
+            if (! $user || ! $user->hasPermissionTo($requiredPermission)) {
                 abort(403, 'You do not have permission to access this page.');
             }
         }
@@ -45,7 +44,7 @@ class CheckPermission
 
     /**
      * Get required permission based on route name
-     */ 
+     */
     private function getRequiredPermission($routeName): string
     {
         $permissionMap = [
@@ -91,6 +90,7 @@ class CheckPermission
             'admin.site-setting' => 'site.view',
             'admin.general-setting' => 'general.view',
             'admin.shipping-setting' => 'shipping.view',
+            'admin.payment-gateways' => 'payment_gateways.view',
             'admin.profile-index' => 'profile.view',
             'admin.role-index' => 'roles.view',
             'admin.permission-index' => 'permissions.view',

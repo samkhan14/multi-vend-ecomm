@@ -71,7 +71,6 @@
         
         <form id="checkoutForm" action="{{ route('checkout.place.order') }}" method="POST">
             @csrf
-            <input type="hidden" name="payment_method" value="cod">
             <input type="hidden" name="country" id="countryHidden">
             
             <div class="row">
@@ -149,20 +148,42 @@
                                 </div>
                             </div>
                             
-                            <!-- Payment Method - Only COD -->
+                            <!-- Payment Methods -->
                             <div class="col-12">
                                 <div class="my-40">
                                     <h6 class="text-lg mb-24">Payment Method</h6>
-                                    <div class="payment-method-option p-3 border rounded">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" checked>
-                                            <label class="form-check-label" for="cod">
-                                                <i class="fas fa-money-bill-wave text-success me-2"></i>
-                                                Cash on Delivery (COD)
-                                            </label>
+                                    @error('checkout')
+                                        <div class="alert alert-danger mb-3">{{ $message }}</div>
+                                    @enderror
+                                    @forelse($enabledGateways as $index => $gateway)
+                                        <div class="payment-method-option p-3 border rounded mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="payment_method"
+                                                    id="payment_{{ $gateway->slug() }}" value="{{ $gateway->slug() }}"
+                                                    @checked(old('payment_method', $enabledGateways->first()->slug()) === $gateway->slug()) required>
+                                                <label class="form-check-label" for="payment_{{ $gateway->slug() }}">
+                                                    @if($gateway->slug() === 'cod')
+                                                        <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                                        Cash on Delivery (COD)
+                                                    @else
+                                                        <i class="fab fa-bitcoin text-warning me-2"></i>
+                                                        Pay with Crypto (NOWPayments)
+                                                    @endif
+                                                </label>
+                                            </div>
+                                            <small class="text-muted ms-4">
+                                                @if($gateway->slug() === 'cod')
+                                                    Pay when you receive your order
+                                                @else
+                                                    You will be redirected to NOWPayments to complete payment securely
+                                                @endif
+                                            </small>
                                         </div>
-                                        <small class="text-muted ms-4">Pay when you receive your order</small>
-                                    </div>
+                                    @empty
+                                        <div class="alert alert-warning mb-0">
+                                            No payment methods are currently available. Please contact support.
+                                        </div>
+                                    @endforelse
                                 </div>
                             </div>
                         </div>

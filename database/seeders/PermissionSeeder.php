@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
@@ -84,12 +83,13 @@ class PermissionSeeder extends Seeder
             'site.view',
             'general.view',
             'shipping.view',
+            'payment_gateways.view',
             'profile.view',
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
-         
+
     }
 }

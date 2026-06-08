@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            return;
+        }
+
         Schema::table('products', function (Blueprint $table) {
 
             // Add correct short name fulltext index
@@ -28,6 +32,6 @@ return new class extends Migration
     {
         // Schema::table('products', function (Blueprint $table) {
         //         $table->dropFullText('prod_ft_index');
-        //     });  
+        //     });
     }
 };

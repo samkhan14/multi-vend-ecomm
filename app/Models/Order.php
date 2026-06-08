@@ -39,8 +39,8 @@ class Order extends Model
         'notes',
         'status',
         'order_currency',
-    'conversion_rate', 
-    'base_amount',
+        'conversion_rate',
+        'base_amount',
     ];
 
     protected $casts = [
@@ -65,6 +65,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(OrderTranssections::class, 'order_id');
+    }
+
     public function statusHistories()
     {
         return $this->hasMany(OrderStatusHistory::class);
@@ -73,7 +78,7 @@ class Order extends Model
     // Helper Methods
     public function generateOrderNumber()
     {
-        return 'ORD-' . strtoupper(uniqid());
+        return 'ORD-'.strtoupper(uniqid());
     }
 
     protected static function boot()
@@ -87,27 +92,20 @@ class Order extends Model
         });
     }
 
-
-
-
-
-
-
-
     // Add this method to Order model
-public function getBaseAmountAttribute()
-{
-    // Agar base_amount already hai to use karo (new orders)
-    if ($this->attributes['base_amount'] !== null) {
-        return $this->attributes['base_amount'];
+    public function getBaseAmountAttribute()
+    {
+        // Agar base_amount already hai to use karo (new orders)
+        if ($this->attributes['base_amount'] !== null) {
+            return $this->attributes['base_amount'];
+        }
+
+        // Agar conversion_rate hai to calculate karo (fallback)
+        if ($this->attributes['conversion_rate'] !== null && $this->attributes['conversion_rate'] > 0) {
+            return $this->attributes['grand_total'] / $this->attributes['conversion_rate'];
+        }
+
+        // Last resort: assume old order is already in base currency
+        return $this->attributes['grand_total'];
     }
-    
-    // Agar conversion_rate hai to calculate karo (fallback)
-    if ($this->attributes['conversion_rate'] !== null && $this->attributes['conversion_rate'] > 0) {
-        return $this->attributes['grand_total'] / $this->attributes['conversion_rate'];
-    }
-    
-    // Last resort: assume old order is already in base currency
-    return $this->attributes['grand_total'];
-}
 }

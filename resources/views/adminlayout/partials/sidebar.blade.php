@@ -358,7 +358,7 @@
                     @endcan
 
 
-                    @canany(['seo.view', 'settings.view', 'shipping.view', 'subscribers.view', 'profile.view'])
+                    @canany(['seo.view', 'settings.view', 'shipping.view', 'subscribers.view', 'profile.view', 'payment_gateways.view', 'general.view', 'site.view'])
                     <li class="list-group-item px-0 py-0 sidebar-item mb-3 has-children border-0">
                         <a href="#seo-setting"
                             class="text-heading text-decoration-none lh-1 d-flex sidebar-link align-items-center py-5 px-6 position-relative"
@@ -398,6 +398,13 @@
                                     <a class="sidebar-link pe-5 ps-8 py-5 lh-1 text-decoration-none fs-14px fw-semibold"
                                         href="{{ route('admin.shipping-setting') }}" title="Site settings">Shipping
                                         settings</a>
+                                </li>
+                                @endcan
+                                @can('payment_gateways.view')
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link pe-5 ps-8 py-5 lh-1 text-decoration-none fs-14px fw-semibold {{ request()->routeIs('admin.payment-gateways') ? 'active' : '' }}"
+                                        href="{{ route('admin.payment-gateways') }}" title="Payment gateways">Payment
+                                        Gateways</a>
                                 </li>
                                 @endcan
                                 @can('profile.view')

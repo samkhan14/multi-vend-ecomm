@@ -32,6 +32,21 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-5" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+
+        @if($order->payment_method === 'nowpayments' && $order->payment_status !== 'paid')
+        <div class="alert alert-warning mb-5" role="alert">
+            <i class="fas fa-clock me-2"></i>
+            Your crypto payment is being processed. You will receive a confirmation email once payment is confirmed on the blockchain.
+        </div>
+        @endif
         
         <div class="row justify-content-center">
             <div style="margin-top: 20px !important;">
